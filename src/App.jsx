@@ -1,17 +1,60 @@
 import ProjectsSidebar from "./components/ProjectsSidebar.jsx"
 import NewProject from "./components/NewProject.jsx"
 import NoProjectSelected from "./components/NoProjectSelected.jsx"
-import {useState} from "react"
+import {useReducer} from "react"
 import SelectedProject from "./components/SelectedProject.jsx"
 import {TaskContext} from "./store/TaskContext.jsx"
 
+
+function projectStateUpdater(state, action){
+    switch(action.type){
+    case 'ADD_PROJECT':
+        return {
+            ...state,
+            selectedProjectId: null
+        }
+    case 'DELETE_PROJECT':
+        return {
+            ...state,
+            selectedProjectId: undefined,
+            projects: state.projects.filter(project => project.id !== state.selectedProjectId)
+        }
+    case 'CANCEL_ADD_PROJECT':
+        return {
+            ...state,
+            selectedProjectId: undefined
+        }
+    case 'SUBMIT_PROJECT':
+        return {
+            ...state,
+            selectedProjectId: action.payload.id,
+            projects: [...state.projects, action.payload]
+        }
+    case 'SELECT_PROJECT':
+        return{
+            ...state,
+            selectedProjectId: action.payload
+        }
+    case 'ADD_TASK':
+        return {
+            ...state,
+            tasks: [...state.tasks, action.payload]
+        }
+    case 'DELETE_TASK':
+        return{
+            ...state,
+            tasks: state.tasks.filter(task => task.id !== action.payload)
+        }
+    }
+}
+
 function App() {
 
-  const [projectState, setProjectState] = useState({
-    selectedProjectId: undefined,
-    projects: [],
-    tasks: []
-  })
+    const [projectState, projectDispatch] = useReducer(projectStateUpdater, {
+        selectedProjectId: undefined,
+        projects: [],
+        tasks: []
+    })
 
 
     function handleAddTask(text){
@@ -20,31 +63,18 @@ function App() {
             id: Math.floor(Math.random()*1000),
             projectId: projectState.selectedProjectId
         }
-        setProjectState(prevState => ({
-            ...prevState,
-            tasks:[...prevState.tasks, newTask]
-
-        }))
+        projectDispatch({type: 'ADD_TASK', payload: newTask})
     }
     function handleDeleteTask(taskId){
-        setProjectState(prevState => ({
-            ...prevState,
-            tasks: prevState.tasks.filter(task => task.id !== taskId)
-        }))
+        projectDispatch({type: 'DELETE_TASK', payload: taskId})
     }
 
   function handleStartProject(){
-    setProjectState(prevState => ({
-      ...prevState,
-      selectedProjectId: null
-    }))
+    projectDispatch({type:'ADD_PROJECT'})
   }
 
   function handleCancel(){
-    setProjectState(prevState => ({
-      ...prevState,
-      selectedProjectId: undefined
-    }))
+    projectDispatch({type: 'CANCEL_ADD_PROJECT'})
   }
 
   function handleSave(projectData){
@@ -52,25 +82,15 @@ function App() {
         ...projectData,
         id: Math.floor(Math.random()*1000)
     }
-    setProjectState(prevState => ({
-        ...prevState,
-        selectedProjectId: undefined,
-        projects:[...prevState.projects, newProject]
-
-    }))
+    projectDispatch({type: 'SUBMIT_PROJECT', payload: newProject})
   }
   function onSelectProject(projectId){
-    setProjectState(prevState => ({
-        ...prevState,
-        selectedProjectId: projectId
-    }))
+    projectDispatch({type: 'SELECT_PROJECT', payload: projectId})
   }
   function handleDeleteProject(){
-    setProjectState(prevState => ({
-        ...prevState,
-        selectedProjectId: undefined,
-        projects: prevState.projects.filter(project => project.id !== prevState.selectedProjectId)
-    }))
+    projectDispatch({
+        type: 'DELETE_PROJECT'
+    })
   }
 
   let content
