@@ -4,7 +4,7 @@ import Heading from "./Heading.jsx"
 
 export default function NoProjectSelected({onStartProject}){
 	return (
-		<section className="text-center w-2/3 md:mt-60">
+		<section className="text-center w-2/3 md:mt-40">
 		<img className="h-24 w-24 object-contain mx-auto" src={noProjectImage} alt="An empty task list image" />
 		<Heading>No Project Selected</Heading>
 		<p className="text-stone-500">Select a projector get started with a new one</p>

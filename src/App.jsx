@@ -4,6 +4,7 @@ import NoProjectSelected from "./components/NoProjectSelected.jsx"
 import {useReducer} from "react"
 import SelectedProject from "./components/SelectedProject.jsx"
 import {TaskContext} from "./store/TaskContext.jsx"
+import Header from "./components/Header.jsx"
 
 
 function projectStateUpdater(state, action){
@@ -112,10 +113,13 @@ function App() {
     }
 
   return (
-    <main className="h-screen my-8 flex gap-8 bg-stone-50">
-    <ProjectsSidebar selectedProjectId={projectState.selectedProjectId} onStartProject={handleStartProject} projects={projectState.projects} selectProject={onSelectProject} />
-        {content}
-    </main>
+    <>
+        <Header />
+        <main className="h-screen my-8 flex gap-8">
+        <ProjectsSidebar selectedProjectId={projectState.selectedProjectId} onStartProject={handleStartProject} projects={projectState.projects} selectProject={onSelectProject} />
+            {content}
+        </main>
+    </>
   )
 }
 
